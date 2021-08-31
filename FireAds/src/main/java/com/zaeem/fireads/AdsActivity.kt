@@ -35,6 +35,7 @@ import java.util.*
 const val TEST_INTERSTITIAL="ca-app-pub-3940256099942544/1033173712"
 const val TEST_NATIVE="ca-app-pub-3940256099942544/2247696110"
 const val TEST_BANNER="ca-app-pub-3940256099942544/6300978111"
+const val TEST_AP_OPEN="ca-app-pub-3940256099942544/3419835294"
 
 abstract class AdsActivity : AppCompatActivity() {
   private var currentNativeAd: NativeAd? = null
