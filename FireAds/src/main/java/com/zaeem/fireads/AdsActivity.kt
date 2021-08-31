@@ -1,18 +1,4 @@
-/*
- * Copyright (C) 2017 Google, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package com.zaeem.fireads
 
 import android.app.Activity
@@ -125,7 +111,7 @@ abstract class AdsActivity : AppCompatActivity() {
 
   }
 
-  protected fun showNativeAd(ad_frame: FrameLayout, native_ad_id: String) {
+  protected fun showNativeAd(ad_container: FrameLayout, native_ad_id: String, nativeType: NativeType) {
 
     val builder = AdLoader.Builder(this, native_ad_id)
 
@@ -142,10 +128,10 @@ abstract class AdsActivity : AppCompatActivity() {
       currentNativeAd?.destroy()
       currentNativeAd = unifiedNativeAd
       val adView = layoutInflater
-        .inflate(R.layout.native_ad_large, null) as NativeAdView
+        .inflate(nativeType.viewId, null) as NativeAdView
       populateUnifiedNativeAdView(unifiedNativeAd, adView)
-      ad_frame.removeAllViews()
-      ad_frame.addView(adView)
+      ad_container.removeAllViews()
+      ad_container.addView(adView)
     }
 
     val isMuted= false
@@ -181,28 +167,44 @@ abstract class AdsActivity : AppCompatActivity() {
 
   }
 
-   fun  getAdSize(container : ViewGroup) : AdSize{
-      val display = windowManager.defaultDisplay
-      val outMetrics = DisplayMetrics()
-      display.getMetrics(outMetrics)
+  private fun getAdSize(container : ViewGroup) : AdSize{
+    val display = windowManager.defaultDisplay
+    val outMetrics = DisplayMetrics()
+    display.getMetrics(outMetrics)
 
-      val density = outMetrics.density
+    val density = outMetrics.density
 
-      var adWidthPixels = container.width.toFloat()
-      if (adWidthPixels == 0f) {
-        adWidthPixels = outMetrics.widthPixels.toFloat()
-      }
-
-     val adWidth = (adWidthPixels / density).toInt()
-      return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
+    var adWidthPixels = container.width.toFloat()
+    if (adWidthPixels == 0f) {
+      adWidthPixels = outMetrics.widthPixels.toFloat()
     }
 
+    val adWidth = (adWidthPixels / density).toInt()
+    return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
+  }
 
-  protected fun showBannerAd(context: Context, container : ViewGroup, banner_id: String)
+
+  private fun getAdSize(bannerType: BannerType, container: ViewGroup) : AdSize
+  {
+    return when(bannerType)
+    {
+      BannerType.ADAPTIVE-> {
+        getAdSize(container)
+
+      }
+      else-> {
+        bannerType.adSize!!
+
+      }
+    }
+  }
+  protected fun showBannerAd(context: Context, container : ViewGroup, banner_id: String, bannerType: BannerType)
   {
     adView = AdView(context)
     adView?.adUnitId =banner_id
-    adView?.adSize= AdSize.BANNER
+    adView?.adSize=getAdSize(bannerType,container)
+
+
     container.addView(adView)
     val adRequest = AdRequest.Builder().build()
     adView?.loadAd(adRequest)

@@ -17,10 +17,10 @@ class MainActivity: AdsActivity()
 
         setContentView(binding.root)
 
-        showNativeAd(ad_frame = binding.nativeAddLayout, TEST_NATIVE)
+        showNativeAd(ad_container = binding.nativeAddLayout, TEST_NATIVE, NativeType.LARGE)
 
 
-        showBannerAd(this,binding.bannerAddLayout, TEST_BANNER)
+        showBannerAd(this,binding.bannerAddLayout, TEST_BANNER,BannerType.ADAPTIVE)
 
 
         showInterstitial(this, TEST_INTERSTITIAL)
